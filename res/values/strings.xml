@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="mode_ready">Tetris\nPress Up To Play</string>
+	<string name="mode_pause">Paused\nPress Up To Resume</string>
+	<string name="mode_lose_prefix">Game Over\nScore: </string>
+	<string name="mode_lose_suffix">\nPress Up To Play</string>
+
+	<string name="tetris_layout_text">TETRIS_LAYOUT_TEXT</string>
+    <string name="server_layout_text">SERVER_LAYOUT_TEXT</string>
+    <string name="client_layout_text">Enter IP Address</string>
+    <string name="play_button">Play Tetris!</string>
+    <string name="client_button">Enter IP Address</string>
+</resources>
