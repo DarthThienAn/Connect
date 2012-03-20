@@ -8,6 +8,7 @@
 
 	<string name="tetris_layout_text">TETRIS_LAYOUT_TEXT</string>
     <string name="server_layout_text">SERVER_LAYOUT_TEXT</string>
+    <string name="server_msg">Insert Msg Here</string>
     <string name="client_layout_text">Enter IP Address</string>
     <string name="play_button">Play Tetris!</string>
     <string name="client_button">Enter IP Address</string>

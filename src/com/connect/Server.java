@@ -1,31 +1,60 @@
 package com.connect;
 
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class ServerActivity
-{
-	String ip;
-	int SERVERPORT = 8080;
-	ServerSocket srvSocket;
+public class Server {
+
+	private String ip;
+	private BufferedReader in;
+	private PrintWriter out;
+	private int port;
+	private Socket skt;
 	
-	public String initServer()
+	public Server()
 	{
 		ip = getLocalIpAddress();
-		
+	}
+	
+	public Server(String ip)
+	{
+		this.ip = ip;
+	}
+	
+	public void sendMsg(String msg)
+	{
+		out.println(msg);
+	}
+	
+	public String getMsg()
+	{
 		try {
-			srvSocket = new ServerSocket(SERVERPORT);
+			return in.readLine();
 		}
-		catch (Exception e)
-		{
-			
+		catch (Exception e) {
+			return null;
 		}
-		
-		
+	}
+	
+	public String getIP()
+	{
 		return ip;
+	}
+	
+	public boolean close()
+	{
+		try {
+			skt.close();
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 	
 	private String getLocalIpAddress() {

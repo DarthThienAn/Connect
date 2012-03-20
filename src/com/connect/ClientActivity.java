@@ -1,5 +1,4 @@
-package com.connect;
-//package com.tetris;
+//package com.connect;
 //
 //import java.io.BufferedReader;
 //import java.io.BufferedWriter;

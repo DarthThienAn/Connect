@@ -10,7 +10,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
-    android:text="Welcome to Tetris.\n Choose a side to begin."
+    android:text="Connect101"
     android:textColor="#ffffff"
     android:textSize="24sp"
     android:visibility="visible" />

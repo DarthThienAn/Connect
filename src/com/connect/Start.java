@@ -13,13 +13,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,7 +26,7 @@ import android.widget.TextView;
 
 public class Start extends Activity {
 
-	private static final String TAG = "SomethingView";
+	//	private static final String TAG = "SomethingView";
 
 	/**
 	 * mode macros
@@ -54,6 +47,8 @@ public class Start extends Activity {
 	public static final int SERVERPORT = 8080;
 	private TextView serverStatus;
 	private ServerSocket serverSocket;
+	private BufferedReader serverIn;
+	private BufferedReader clientIn;
 	private PrintWriter serverOut;
 	private PrintWriter clientOut;
 	private EditText serverMsg;
@@ -77,7 +72,7 @@ public class Start extends Activity {
 	private String fromServer = "";
 
 	private RefreshHandler mRefreshHandler = new RefreshHandler();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,7 +94,7 @@ public class Start extends Activity {
 		@Override
 		public void onClick(View v) {
 			serverSide = true;
-			
+
 			setContentView(R.layout.server);
 
 			serverStatus = (TextView) findViewById(R.id.server_status);
@@ -145,40 +140,9 @@ public class Start extends Activity {
 
 		}
 	};
- 	
-	public String getCurrentIpAddress () {
-	    try {
-	            HttpClient httpclient = new DefaultHttpClient();
-	            HttpGet httpget = new HttpGet("http://www.whatismyip.org");
-	            HttpResponse response;
 
-	            response = httpclient.execute(httpget);
-
-	            HttpEntity entity = response.getEntity();
-	            if (entity != null) 
-	            {
-	                    long len = entity.getContentLength();
-	                    if (len != -1 && len < 1024) 
-	                            return EntityUtils.toString(entity);
-	                    else
-	                            return "Response too long or error.";
-	            } else {
-	                    return ("Null:" + response.getStatusLine().toString());
-	            }
-
-	    }
-	    catch (Exception e)
-	    {
-	    	return "1";
-	    }
-	}
 	// GETS THE IP ADDRESS OF YOUR PHONE'S NETWORK
 	private String getLocalIpAddress() {
-//		WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE); WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-//
-//		int ipAddress = wifiInfo.getIpAddress();
-//
-//		return String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface
 					.getNetworkInterfaces(); en.hasMoreElements();) {
@@ -205,7 +169,7 @@ public class Start extends Activity {
 						@Override
 						public void run() {
 							serverStatus
-									.setText("Listening on IP: " + SERVERIP);
+							.setText("Listening on IP: " + SERVERIP);
 						}
 					});
 					serverSocket = new ServerSocket(SERVERPORT);
@@ -221,36 +185,24 @@ public class Start extends Activity {
 						});
 
 						try {
-							BufferedReader serverIn = new BufferedReader(
+							serverIn = new BufferedReader(
 									new InputStreamReader(
 											client.getInputStream()));
-							// set true, for auto-flushing after print
-							// statements
+							// set true, for auto-flushing after print statements
 							serverOut = new PrintWriter(new BufferedWriter(
 									new OutputStreamWriter(
 											client.getOutputStream())), true);
 							serverOut.println(serverMsg.getText().toString());
-
-							while ((fromClient = serverIn.readLine()) != null) {
-								
-									final String sendValue = fromClient;
-									handler.post(new Runnable() {
-										@Override
-										public void run() {
-											serverStatus.setText(sendValue);
-										}
-									});
-
-									update();
-									mRefreshHandler.sleep(5);
-							}
+							
+							dumb();
+							
 							break;
 						} catch (Exception e) {
 							handler.post(new Runnable() {
 								@Override
 								public void run() {
 									serverStatus
-											.setText("Oops. Connection interrupted.");
+									.setText("Oops. Connection interrupted.");
 								}
 							});
 							e.printStackTrace();
@@ -261,7 +213,7 @@ public class Start extends Activity {
 						@Override
 						public void run() {
 							serverStatus
-									.setText("Couldn't detect a connection.");
+							.setText("Couldn't detect a connection.");
 						}
 					});
 				}
@@ -277,6 +229,29 @@ public class Start extends Activity {
 		}
 	}
 
+	private void dumb()
+	{
+		try {
+			while ((fromClient = serverIn.readLine()) != null) {
+	
+				final String sendValue = fromClient;
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						serverStatus.setText(sendValue);
+					}
+				});
+	
+//				update();
+//				mRefreshHandler.sleep(5);
+			}
+			}
+		catch (Exception e)
+		{
+			
+		}
+	}
+	
 	public class ClientThread implements Runnable {
 		public void run() {
 			try {
@@ -289,7 +264,7 @@ public class Start extends Activity {
 						connected = true;
 
 					while (connected) {
-						
+
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
@@ -298,23 +273,23 @@ public class Start extends Activity {
 								clientStatus = (TextView) findViewById(R.id.client2_status);
 								clientMsg = (EditText) findViewById(R.id.client2_msg);
 								clientStatus.setText("Waiting for Message");
-								
+
 								clientStatus.setText("Connected");
 							}
 						});
-						
+
 						try {
 							BufferedReader clientIn = new BufferedReader(
 									new InputStreamReader(
 											server.getInputStream()));
 							// set true, for auto-flushing after print
 							// statements
-							
+
 							clientOut = new PrintWriter(new BufferedWriter(
 									new OutputStreamWriter(
 											server.getOutputStream())), true);
 							clientOut.println(clientMsg.getText().toString());
-							
+
 							while ((fromServer = clientIn.readLine()) != null) {
 								final String sendValue = fromServer;
 								handler.post(new Runnable() {
@@ -332,7 +307,7 @@ public class Start extends Activity {
 								@Override
 								public void run() {
 									clientStatus
-											.setText("Oops. Connection interrupted");
+									.setText("Oops. Connection interrupted");
 								}
 							});
 							e.printStackTrace();
@@ -357,20 +332,21 @@ public class Start extends Activity {
 			}
 		}
 	}
+	
 	@Override
 	protected void onStop() {
 		super.onStop();
 
-			try {
-				// CLOSE THE SOCKET UPON EXITING
-				serverSocket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		
+		try {
+			// CLOSE THE SOCKET UPON EXITING
+			serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		System.exit(0);
 	}
-	
+
 	class RefreshHandler extends Handler {
 
 		@Override
@@ -383,7 +359,7 @@ public class Start extends Activity {
 			sendMessageDelayed(obtainMessage(0), delayMillis);
 		}
 	};
-	
+
 	public void update() {
 		if (serverSide)
 			serverOut.println(serverMsg.getText().toString());
