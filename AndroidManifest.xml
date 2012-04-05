@@ -5,7 +5,7 @@
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 <uses-sdk android:targetSdkVersion="10" android:minSdkVersion="10"/>
     <application android:label="Connect101">
-      <activity android:name="com.connect.MainTest"
+      <activity android:name="com.connect.TestMsgs"
         android:screenOrientation="portrait"
         android:configChanges="keyboardHidden|orientation">
             <intent-filter>

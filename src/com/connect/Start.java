@@ -37,7 +37,7 @@ public class Start extends Activity {
 	public static final int LOSE = 3;
 	public static final int WIN = 4;
 
-	String ICICLE_KEY = "Something-View";
+	String ICICLE_KEY = "Connect-View";
 	private TextView startText;
 
 	// server

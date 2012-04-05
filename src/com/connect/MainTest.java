@@ -12,15 +12,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-//import com.connect.Start.ClientThread;
-//import com.connect.Start.ServerThread;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
-//import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainTest extends Activity {
@@ -205,8 +202,8 @@ public class MainTest extends Activity {
 	{
 		if (!connected) {
 			
-			serverIP = getServerIP();
-			if (!serverIP.equals("")) {
+			serverIP = ip;
+			if (!ip.equals("")) {
 				Thread cThread = new Thread(new ClientThread());
 				cThread.start();
 			}
@@ -327,6 +324,7 @@ public class MainTest extends Activity {
 							
 							break;
 						} catch (Exception e) {
+							Log.d("ServerInitThread", "FAIL");
 							e.printStackTrace();
 						}
 					}
@@ -344,7 +342,7 @@ public class MainTest extends Activity {
 			try {
 				if (!connected) {
 					InetAddress serverAddr = InetAddress
-							.getByName(getServerIP());
+							.getByName(serverIP);
 					// connecting
 					Socket server = new Socket(serverAddr, SERVERPORT);
 					if (server != null)
