@@ -1,3 +1,7 @@
+/**
+ * Remember that AndroidManifest.xml needs to give permission for connectivity
+ */
+
 package com.connect;
 
 import java.io.BufferedReader;
@@ -12,16 +16,13 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import android.app.Activity;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Window;
 import android.widget.TextView;
 
-public class MainTest extends Activity {
+public class Connect {
 
+	/** default port **/
 	public static final int SERVERPORT = 8080;
 
 	/** input stream from server **/
@@ -39,81 +40,79 @@ public class MainTest extends Activity {
 	/** whether or not the client is connected yet **/
 	boolean connected;
 	
-	private int testCount = 0;
-	
 	//for testing
 	TextView text;
 	Handler handler = new Handler();
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		// remove title bar
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-		setContentView(R.layout.main);
-		text = (TextView) findViewById(R.id.main_text);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent msg) {
-		
-		String ip = "";
-		
-		if (testCount == 0)
-		{
-			initServer();
-			text.setText("Server initialized");
-		}
-		if (testCount == 1)
-		{
-			ip = getServerIP();
-			text.setText("Server IP found: " + ip);
-		}
-		if (testCount == 2)
-		{
-			if(initClient(ip))
-				text.setText("Client initialized");
-			else
-				text.setText("Client initialization failed");
-		}
-		if (testCount == 3)
-		{
-			sendMsgFromServer("Greetings");
-			text.setText("Message from Server Sent : ?");
-		}
-		if (testCount == 4)
-		{
-			String sMsg = getMsgToClient();
-			text.setText("Message from Server Sent : " + sMsg);
-		}
-		if (testCount == 5)
-		{
-			sendMsgFromClient("And hello to you!");
-			text.setText("Message from Client Sent : ?");
-		}
-		if (testCount == 6)
-		{
-			String cMsg = getMsgToServer();
-			text.setText("Message from Client Sent : " + cMsg);
-		}
-		if (testCount == 7)
-		{
-			close();
-			text.setText("Socket Closed");
-		}
-		
-		testCount++;
-		
-		return super.onKeyDown(keyCode, msg);
-	}	
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-		System.exit(0);
-	}
+//	@Override
+//	protected void onCreate(Bundle savedInstanceState) {
+//		super.onCreate(savedInstanceState);
+//
+//		// remove title bar
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//
+//		setContentView(R.layout.main);
+//		text = (TextView) findViewById(R.id.main_text);
+//	}
+//
+//	@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent msg) {
+//		
+//		String ip = "";
+//		
+//		if (testCount == 0)
+//		{
+//			initServer();
+//			text.setText("Server initialized");
+//		}
+//		if (testCount == 1)
+//		{
+//			ip = getServerIP();
+//			text.setText("Server IP found: " + ip);
+//		}
+//		if (testCount == 2)
+//		{
+//			if(initClient(ip))
+//				text.setText("Client initialized");
+//			else
+//				text.setText("Client initialization failed");
+//		}
+//		if (testCount == 3)
+//		{
+//			sendMsgFromServer("Greetings");
+//			text.setText("Message from Server Sent : ?");
+//		}
+//		if (testCount == 4)
+//		{
+//			String sMsg = getMsgToClient();
+//			text.setText("Message from Server Sent : " + sMsg);
+//		}
+//		if (testCount == 5)
+//		{
+//			sendMsgFromClient("And hello to you!");
+//			text.setText("Message from Client Sent : ?");
+//		}
+//		if (testCount == 6)
+//		{
+//			String cMsg = getMsgToServer();
+//			text.setText("Message from Client Sent : " + cMsg);
+//		}
+//		if (testCount == 7)
+//		{
+//			close();
+//			text.setText("Socket Closed");
+//		}
+//		
+//		testCount++;
+//		
+//		return super.onKeyDown(keyCode, msg);
+//	}	
+//	@Override
+//	protected void onStop() {
+//		super.onStop();
+//
+//		System.exit(0);
+//	}
 
 	public void initServer()
 	{

@@ -8,9 +8,10 @@ import android.widget.TextView;
 
 public class TestMsg extends Activity {
 
-	MainTest test = new MainTest();
+	Connect test = new Connect();
 
 	private int testCount = 0;
+	private String ip = "";
 	
 	TextView text;
 	
@@ -27,9 +28,6 @@ public class TestMsg extends Activity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent msg) {
-		
-		String ip = "";
-		
 		if (testCount == 0)
 		{
 			test.initServer();

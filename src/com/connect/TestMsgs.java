@@ -1,12 +1,10 @@
 package com.connect;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -16,9 +14,7 @@ import android.widget.TextView;
 
 public class TestMsgs extends Activity {
 
-	MainTest test = new MainTest();
-
-	private int testCount = 0;
+	Connect test = new Connect();
 	
 	TextView text;
 	
@@ -48,6 +44,7 @@ public class TestMsgs extends Activity {
 	};
 
 	public void update() {
+		Log.d("updating", ".");
 		if (serverSide)
 			test.sendMsgFromServer(serverMsg.getText().toString());
 		else if (clientSide)
@@ -55,22 +52,22 @@ public class TestMsgs extends Activity {
 
 		if (serverSide)
 		{
-			String x = test.getMsgToServer();
-			if (x == null)
+			String message = test.getMsgToServer();
+			if (message == null)
 				text.setText("No msg");
 			else
-				text.setText(x);
+				text.setText(message);
 		}
 		else if (clientSide)
 		{
-			String x = test.getMsgToClient();
-			if (x == null)
+			String message = test.getMsgToClient();
+			if (message == null)
 				text.setText("No msg");
 			else
-				text.setText(x);
+				text.setText(message);
 		}
 		
-		mRefreshHandler.sleep(5);
+		mRefreshHandler.sleep(250);
 	}
 	
 	@Override
@@ -118,27 +115,6 @@ public class TestMsgs extends Activity {
 
 			text.setText("Enter an IP Address to connect to");
 		}
-//			clientSide = true;
-//			
-//			setContentView(R.layout.client);
-//			text = (TextView) findViewById(R.id.client_status);
-//			text.setText("Enter an IP Address to connect");
-//
-//			EditText serverIp = (EditText) findViewById(R.id.server_ip);
-//			String serverIpAddress = serverIp.getText().toString();
-//
-//
-//			if(test.initClient(serverIpAddress))
-//			{
-//				setContentView(R.layout.client2);
-//
-//				text = (TextView) findViewById(R.id.client2_status);
-//				clientMsg = (EditText) findViewById(R.id.client2_msg);
-//				text.setText("Client initialized");
-//			}
-//			else
-//				text.setText("Client initialization failed");
-//		}
 	};	
 	
 
@@ -166,10 +142,6 @@ public class TestMsgs extends Activity {
 						clientButton = (Button) findViewById(R.id.client_check);
 						clientButton.setOnClickListener(check);
 					}
-//					while (true)
-//					{
-//						mRefreshHandler.sleep(5);
-//					}
 				}
 				else
 					text.setText("Client Initialization failed");
@@ -184,60 +156,6 @@ public class TestMsgs extends Activity {
 		}
 	};
 
-	
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent msg) {
-//		
-//		String ip = "";
-//		
-//		if (testCount == 0)
-//		{
-//			test.initServer();
-//			text.setText("Server initialized");
-//		}
-//		if (testCount == 1)
-//		{
-//			ip = test.getServerIP();
-//			text.setText("Server IP found: " + ip);
-//		}
-//		if (testCount == 2)
-//		{
-//			if(test.initClient(ip))
-//				text.setText("Client initialized");
-//			else
-//				text.setText("Client initialization failed");
-//		}
-//		if (testCount == 3)
-//		{
-//			test.sendMsgFromServer("Greetings");
-//			text.setText("Message from Server Sent : ?");
-//		}
-//		if (testCount == 4)
-//		{
-//			String sMsg = test.getMsgToClient();
-//			text.setText("Message from Server Sent : " + sMsg);
-//		}
-//		if (testCount == 5)
-//		{
-//			test.sendMsgFromClient("And hello to you!");
-//			text.setText("Message from Client Sent : ?");
-//		}
-//		if (testCount == 6)
-//		{
-//			String cMsg = test.getMsgToServer();
-//			text.setText("Message from Client Sent : " + cMsg);
-//		}
-//		if (testCount == 7)
-//		{
-//			test.close();
-//			text.setText("Socket Closed");
-//		}
-//		
-//		testCount++;
-//		
-//		return super.onKeyDown(keyCode, msg);
-//	}	
-	
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -246,4 +164,11 @@ public class TestMsgs extends Activity {
 		System.exit(0);
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		test.close();
+		System.exit(0);
+	}
 }
