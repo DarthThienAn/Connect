@@ -40,7 +40,7 @@ public class Connect {
 	ServerSocket srvSocket;
 	/** socket between client and server **/
 	Socket socket;
-	
+
 	/** whether or not the client is connected yet **/
 	boolean connected = false;
 	/** true if connection was initialized as the server **/
@@ -113,6 +113,16 @@ public class Connect {
 		return serverIP;
 	}
 
+	/** returns whether or not a connection has been established or not. 
+	 * 
+	 * @return: returns true if connection has been established,
+	 * false if not. 
+	 * **/
+	public boolean isConnected()
+	{
+		return connected;
+	}
+
 	/** Initialize Client Socket, attempt to connect to give IP address "ip" 
 	 * 
 	 * @return: true if initialization succeeds, false if initializations fails
@@ -151,7 +161,7 @@ public class Connect {
 			else
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -166,7 +176,7 @@ public class Connect {
 		if (out != null)
 			out.println(msg);
 	}
-	
+
 	/** If the input stream has been initialized, read from input stream
 	 * and return the result 
 	 * 
@@ -188,8 +198,8 @@ public class Connect {
 		else 
 			return null;
 	}
-	
-	
+
+
 	/** Function to find phone's IP Address **/
 	private String getLocalIpAddress() {
 		try {
@@ -228,13 +238,17 @@ public class Connect {
 						//begin listening, accept when it comes
 						socket = srvSocket.accept();
 
-						//init I/O streams
+						if (socket != null)
+							connected = true;
+
+						//initialize I/O streams
 						try {
 							//initialize server input stream
 							in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 							//initialize server output stream
 							// set true, for auto-flushing after print statements
-							out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+							out = new PrintWriter(new BufferedWriter(
+									new OutputStreamWriter(socket.getOutputStream())), true);
 
 							break;
 						} catch (Exception e) {
@@ -272,11 +286,13 @@ public class Connect {
 					while (connected) {
 						try {
 							//initialize client input stream
-							in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+							in = new BufferedReader(
+									new InputStreamReader(socket.getInputStream()));
 							//initialize client output stream
 							// set true, for auto-flushing after print statements
-							out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-							
+							out = new PrintWriter(new BufferedWriter(
+									new OutputStreamWriter(socket.getOutputStream())), true);
+
 							break;
 						} catch (Exception e) {
 							e.printStackTrace();

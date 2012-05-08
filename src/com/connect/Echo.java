@@ -92,8 +92,8 @@ public class Echo extends Activity {
 
 			text = (TextView) findViewById(R.id.server_status);
 			serverMsg = (EditText) findViewById(R.id.server_msg);
-			serverButton = (Button) findViewById(R.id.server_check);
-			serverButton.setOnClickListener(check);
+//			serverButton = (Button) findViewById(R.id.server_check);
+//			serverButton.setOnClickListener(check);
 			
 			test.initServer();
 			text.setText("Server initialized, IP: " + test.getServerIP());
@@ -143,8 +143,8 @@ public class Echo extends Activity {
 						
 						update();
 						
-						clientButton = (Button) findViewById(R.id.client_check);
-						clientButton.setOnClickListener(check);
+//						clientButton = (Button) findViewById(R.id.client_check);
+//						clientButton.setOnClickListener(check);
 					}
 				}
 				else
