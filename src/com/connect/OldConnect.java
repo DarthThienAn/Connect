@@ -22,7 +22,7 @@ import java.util.Enumeration;
 
 import android.util.Log;
 
-public class Connect {
+public class OldConnect {
 
 	/** default port **/
 	private static final int SERVERPORT = 8080;
@@ -30,10 +30,14 @@ public class Connect {
 	private int userPort = -1;
 
 
-	/** input stream **/
-	BufferedReader in;
-	/** output stream **/
-	PrintWriter out;
+	/** input stream from server **/
+	BufferedReader serverIn;
+	/** output stream from server **/
+	PrintWriter serverOut;
+	/** input stream from client **/
+	BufferedReader clientIn;
+	/** output stream from client **/
+	PrintWriter clientOut;
 	/** server phone's IP **/
 	String serverIP = "";
 	/** server socket that will initialize other sockets **/
@@ -53,7 +57,10 @@ public class Connect {
 	 **/
 	public void initServer()
 	{
-		initServer(-1);
+		isServer = true;
+		serverIP = getLocalIpAddress();
+		Thread serverThread = new Thread(new ServerThread());
+		serverThread.start();
 	}
 
 	/** Initialize Server Socket with specific port, begin listening for connections
@@ -62,14 +69,11 @@ public class Connect {
 	 **/
 	public void initServer(int port)
 	{
-		if (!isClient)
-		{
-			isServer = true;
-			userPort = port;
-			serverIP = getLocalIpAddress();
-			Thread serverThread = new Thread(new ServerThread());
-			serverThread.start();
-		}
+		isServer = true;
+		userPort = port;
+		serverIP = getLocalIpAddress();
+		Thread serverThread = new Thread(new ServerThread());
+		serverThread.start();
 	}
 
 	/** Close the Server Socket and end connections **/
@@ -78,8 +82,8 @@ public class Connect {
 		if (isServer)
 		{
 			try {
-				in.close();
-				out.close();
+				serverIn.close();
+				serverOut.close();
 				srvSocket.close();
 				socket.close();
 			}
@@ -92,8 +96,8 @@ public class Connect {
 		if (isClient)
 		{
 			try {
-				in.close();
-				out.close();
+				clientIn.close();
+				clientOut.close();
 				socket.close();
 			}
 			catch (Exception e)
@@ -113,6 +117,34 @@ public class Connect {
 		return serverIP;
 	}
 
+	/** If Server's output stream has been initialized, send "msg"
+	 * 
+	 * @param: msg - the message to be sent.
+	 **/
+	 private void sendMsgFromServer(String msg)
+	{
+		if (serverOut != null)
+			serverOut.println(msg);
+	}
+
+	/** If Server's input stream has been initialized, read from input stream 
+	 * 
+	 * @return: Return message from Client.
+	 * **/
+	private String getMsgToServer()
+	{
+		try {
+			String fromClient = serverIn.readLine();
+			final String returnValue = fromClient;
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			//return null if no message found
+			return null;
+		}
+	}
+
 	/** Initialize Client Socket, attempt to connect to give IP address "ip" 
 	 * 
 	 * @return: true if initialization succeeds, false if initializations fails
@@ -121,7 +153,19 @@ public class Connect {
 	 **/
 	public boolean initClient(String ip)
 	{
-		return initClient(ip, -1);
+		isClient = true;
+		if (!connected) {
+
+			serverIP = ip;
+			if (!ip.equals("")) {
+				Thread cThread = new Thread(new ClientThread());
+				cThread.start();
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/** Initialize Client Socket, attempt to connect to give IP address "ip" 
@@ -133,29 +177,51 @@ public class Connect {
 	 **/
 	public boolean initClient(String ip, int port)
 	{
-		if (!isServer)
-		{
-			isClient = true;
-			if (!connected) {
+		isClient = true;
+		if (!connected) {
 
-				serverIP = ip;
-				userPort = port;
-				if (!ip.equals("")) {
-					Thread cThread = new Thread(new ClientThread());
-					cThread.start();
-				}
+			serverIP = ip;
+			userPort = port;
+			if (!ip.equals("")) {
+				Thread cThread = new Thread(new ClientThread());
+				cThread.start();
 			}
-
-			if (connected)
-				return false;
-			else
-				return true;
 		}
 		
-		return false;
+		if (connected)
+			return false;
+		else
+			return true;
 	}
 
+	/** If Client's output stream has been initialized, send "msg" 
+	 * 
+	 * @param: msg - the message to be sent.
+	 **/
+	private void sendMsgFromClient(String msg)
+	{
+		if (clientOut != null)
+			clientOut.println(msg);
+	}
 
+	/** If Server's input stream has been initialized, read from input stream 
+	 * 
+	 * @return: Return message from Client.
+	 * **/
+	private String getMsgToClient()
+	{
+		try {
+			String fromServer = clientIn.readLine();
+			final String returnValue = fromServer;
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	
 	/** If the output stream has been initialized, 
 	 * send "msg" to the other side of the connection. 
 	 * 
@@ -163,8 +229,16 @@ public class Connect {
 	 * **/
 	public void sendMsg(String msg)
 	{
-		if (out != null)
-			out.println(msg);
+		if (isServer)
+		{
+			if (serverOut != null)
+				serverOut.println(msg);
+		}
+		else if (isClient)
+		{
+			if (clientOut != null)
+				clientOut.println(msg);
+		}
 	}
 	
 	/** If the input stream has been initialized, read from input stream
@@ -175,10 +249,25 @@ public class Connect {
 	 * **/
 	public String getMsg()
 	{
-		if (in != null)
+		if (isServer)
 		{
 			try {
-				return in.readLine();
+				String fromClient = serverIn.readLine();
+				final String returnValue = fromClient;
+
+				return returnValue;
+			}
+			catch (Exception e) {
+				//return null if no message found
+				return null;
+			}
+		} else if (isClient)
+		{
+			try {
+				String fromServer = clientIn.readLine();
+				final String returnValue = fromServer;
+
+				return returnValue;
 			}
 			catch (Exception e) {
 				//return null if no message found
@@ -186,6 +275,7 @@ public class Connect {
 			}
 		}
 		else 
+			//return null if no message found
 			return null;
 	}
 	
@@ -231,10 +321,10 @@ public class Connect {
 						//init I/O streams
 						try {
 							//initialize server input stream
-							in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+							serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 							//initialize server output stream
 							// set true, for auto-flushing after print statements
-							out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+							serverOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
 							break;
 						} catch (Exception e) {
@@ -272,10 +362,10 @@ public class Connect {
 					while (connected) {
 						try {
 							//initialize client input stream
-							in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+							clientIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 							//initialize client output stream
 							// set true, for auto-flushing after print statements
-							out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+							clientOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 							
 							break;
 						} catch (Exception e) {

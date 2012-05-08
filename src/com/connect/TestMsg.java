@@ -47,22 +47,22 @@ public class TestMsg extends Activity {
 		}
 		if (testCount == 3)
 		{
-			test.sendMsgFromServer("Greetings");
+			test.sendMsg("Greetings");
 			text.setText("Message from Server Sent : ?");
 		}
 		if (testCount == 4)
 		{
-			String sMsg = test.getMsgToClient();
+			String sMsg = test.getMsg();
 			text.setText("Message from Server Sent : " + sMsg);
 		}
 		if (testCount == 5)
 		{
-			test.sendMsgFromClient("And hello to you!");
+			test.sendMsg("And hello to you!");
 			text.setText("Message from Client Sent : ?");
 		}
 		if (testCount == 6)
 		{
-			String cMsg = test.getMsgToServer();
+			String cMsg = test.getMsg();
 			text.setText("Message from Client Sent : " + cMsg);
 		}
 		if (testCount == 7)

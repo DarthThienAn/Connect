@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class TestMsgs extends Activity {
+public class Echo extends Activity {
 
 	Connect test = new Connect();
 	
@@ -47,17 +47,17 @@ public class TestMsgs extends Activity {
 		Log.d("updating", ".");
 		if (serverSide)
 			test.sendMsg(serverMsg.getText().toString());
-		else if (clientSide)
-			test.sendMsg(clientMsg.getText().toString());
-
-		if (serverSide)
-		{
-			String message = test.getMsg();
-			if (message == null)
-				text.setText("No msg");
-			else
-				text.setText(message);
-		}
+//		else if (clientSide)
+//			test.sendMsg(clientMsg.getText().toString());
+//
+//		if (serverSide)
+//		{
+//			String message = test.getMsg();
+//			if (message == null)
+//				text.setText("No msg");
+//			else
+//				text.setText(message);
+//		}
 		else if (clientSide)
 		{
 			String message = test.getMsg();
@@ -99,6 +99,8 @@ public class TestMsgs extends Activity {
 			text.setText("Server initialized, IP: " + test.getServerIP());
 			
 			serverSide = true;
+			
+			update();
 		}
 	};
 
@@ -138,6 +140,8 @@ public class TestMsgs extends Activity {
 
 						text.setText("Client Initialized");
 						clientSide = true;
+						
+						update();
 						
 						clientButton = (Button) findViewById(R.id.client_check);
 						clientButton.setOnClickListener(check);
